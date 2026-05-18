@@ -15,10 +15,11 @@ sby_adanear_load_packages <- function(){
     return(invisible(TRUE))
   }
 
-  # Define pacotes obrigatorios para o fluxo de sampling
+  # Define pacotes obrigatorios para o fluxo de sampling.
+  # Rfast e Suggests (so usado em fallback R puro quando o kernel C nao
+  # esta disponivel) e por isso nao entra na lista obrigatoria.
   sby_package_names <- c(
-    "cli",
-    "Rfast"
+    "cli"
   )
 
   # Valida disponibilidade de cada pacote obrigatorio

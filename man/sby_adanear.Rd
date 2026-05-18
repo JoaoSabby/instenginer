@@ -89,9 +89,6 @@ As rotinas atuais operam sobre \code{matrix} numérica densa após seleção de 
 }
 }
 
-\subsection{Parâmetros exclusivos da rota HNSW}{
-}
-
 \subsection{Recomendações práticas}{
 \itemize{
 \item Comece com \code{sby_knn_engine = "auto"}, \code{sby_knn_algorithm = "auto"} e \code{sby_knn_distance_metric = "euclidean"}.
@@ -101,11 +98,11 @@ As rotinas atuais operam sobre \code{matrix} numérica densa após seleção de 
 }
 }
 \references{
-He, H., Bai, Y., Garcia, E. A., \& Li, S. (2008). ADASYN: Adaptive synthetic
+He, H., Bai, Y., Garcia, E. A., and Li, S. (2008). ADASYN: Adaptive synthetic
 sampling approach for imbalanced learning. In *2008 IEEE International Joint
 Conference on Neural Networks* (pp. 1322-1328). IEEE.
 
-Malkov, Y. A., \& Yashunin, D. A. (2018). Efficient and robust approximate
+Malkov, Y. A., and Yashunin, D. A. (2018). Efficient and robust approximate
 nearest neighbor search using Hierarchical Navigable Small World graphs.
 *IEEE Transactions on Pattern Analysis and Machine Intelligence*, 42(4),
 824-836.

@@ -11,7 +11,7 @@ partes críticas quando disponíveis.
 
 ## Estado da API
 
-A versão atual do pacote é **0.2.6**. O pacote está em desenvolvimento e a API
+A versão atual do pacote é **0.3.0**. O pacote está em desenvolvimento e a API
 pública foi organizada para usar:
 
 - Funções e parâmetros com prefixo `sby_` e padrão `snake_case`.
@@ -302,7 +302,7 @@ Dentro do container, valide o pacote com:
 
 ```sh
 R CMD build .
-R CMD check instenginer_0.2.6.tar.gz
+R CMD check instenginer_0.3.0.tar.gz
 ```
 
 ## Arquivos principais
@@ -318,7 +318,7 @@ R CMD check instenginer_0.2.6.tar.gz
 
 ```sh
 R CMD build .
-R CMD check instenginer_0.2.6.tar.gz
+R CMD check instenginer_0.3.0.tar.gz
 R CMD INSTALL .
 ```
 

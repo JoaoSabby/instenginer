@@ -35,17 +35,24 @@ sby_apply_z_score_scaling_matrix <- function(sby_x_matrix, sby_scaling_info){
     )
   }else{
 
-    # Calcula centralizacao e escala usando operacoes vetorizadas em R
-    sby_centered <- Rfast::eachrow(
-      x = sby_x_matrix,
-      y = sby_scaling_info$centers,
-      oper = "-"
-    )
-    sby_scaled <- Rfast::eachrow(
-      x = sby_centered,
-      y = sby_scaling_info$scales,
-      oper = "/"
-    )
+    # Fallback puramente em R quando o kernel nativo nao esta disponivel.
+    # Quando Rfast esta instalado, usa eachrow (mais rapido em bases grandes);
+    # caso contrario, recorre a sweep base.
+    if(requireNamespace("Rfast", quietly = TRUE)){
+      sby_centered <- Rfast::eachrow(
+        x = sby_x_matrix,
+        y = sby_scaling_info$centers,
+        oper = "-"
+      )
+      sby_scaled <- Rfast::eachrow(
+        x = sby_centered,
+        y = sby_scaling_info$scales,
+        oper = "/"
+      )
+    }else{
+      sby_centered <- sweep(sby_x_matrix, MARGIN = 2L, STATS = sby_scaling_info$centers, FUN = "-")
+      sby_scaled <- sweep(sby_centered, MARGIN = 2L, STATS = sby_scaling_info$scales, FUN = "/")
+    }
   }
 
   # Garante armazenamento numerico double apos o calculo

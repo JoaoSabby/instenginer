@@ -83,9 +83,6 @@ As rotinas atuais operam sobre \code{matrix} numérica densa após seleção de 
 }
 }
 
-\subsection{Parâmetros exclusivos da rota HNSW}{
-}
-
 \subsection{Recomendações práticas}{
 \itemize{
 \item Comece com \code{sby_knn_engine = "auto"}, \code{sby_knn_algorithm = "auto"} e \code{sby_knn_distance_metric = "euclidean"}.

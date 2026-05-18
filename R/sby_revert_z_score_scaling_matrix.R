@@ -35,17 +35,22 @@ sby_revert_z_score_scaling_matrix <- function(sby_x_matrix, sby_scaling_info){
     )
   }else{
 
-    # Reverte escala e centralizacao usando operacoes vetorizadas em R
-    sby_unscaled <- Rfast::eachrow(
-      x = sby_x_matrix,
-      y = sby_scaling_info$scales,
-      oper = "*"
-    )
-    sby_restored <- Rfast::eachrow(
-      x = sby_unscaled,
-      y = sby_scaling_info$centers,
-      oper = "+"
-    )
+    # Fallback puramente em R quando o kernel nativo nao esta disponivel.
+    if(requireNamespace("Rfast", quietly = TRUE)){
+      sby_unscaled <- Rfast::eachrow(
+        x = sby_x_matrix,
+        y = sby_scaling_info$scales,
+        oper = "*"
+      )
+      sby_restored <- Rfast::eachrow(
+        x = sby_unscaled,
+        y = sby_scaling_info$centers,
+        oper = "+"
+      )
+    }else{
+      sby_unscaled <- sweep(sby_x_matrix, MARGIN = 2L, STATS = sby_scaling_info$scales, FUN = "*")
+      sby_restored <- sweep(sby_unscaled, MARGIN = 2L, STATS = sby_scaling_info$centers, FUN = "+")
+    }
   }
 
   # Garante armazenamento numerico double apos a reversao

@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 URL: https://github.com/JoaoSabby/instenginer
 BugReports: https://github.com/JoaoSabby/instenginer/issues
 Encoding: UTF-8
-Language: pt_BR
+Language: pt-BR
 NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -28,11 +28,10 @@ Imports:
     generics,
     recipes,
     rlang,
-    Rfast,
-    tibble,
-    glue
+    tibble
 Suggests:
     modeldata,
     Matrix,
+    Rfast,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

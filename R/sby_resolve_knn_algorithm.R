@@ -11,7 +11,7 @@
 #' @return Nome do algoritmo KNN resolvido
 #' @noRd
 sby_resolve_knn_algorithm <- function(sby_knn_algorithm, sby_predictor_column_count, sby_knn_engine){
-  
+
   # Retorna algoritmo explicito quando modo automatico nao foi solicitado
   if(!identical(
     x = sby_knn_algorithm,
@@ -31,9 +31,9 @@ sby_resolve_knn_algorithm <- function(sby_knn_algorithm, sby_predictor_column_co
     # Informa ao usuario que o engine selecionado gerencia o algoritmo internamente
     sby_adanear_inform(
       sby_message = paste0(
-        "KNN automático: sby_knn_algorithm = \"auto\" com sby_knn_engine = \"RcppHNSW\". ",
-        "Justificativa: RcppHNSW controla internamente a estratégia HNSW, então o pacote ",
-        "mantém o algoritmo como auto porque algoritmos externos não são aplicados nessa rota."
+        "KNN automatico: sby_knn_algorithm = \"auto\" com sby_knn_engine = \"RcppHNSW\". ",
+        "Justificativa: RcppHNSW controla internamente a estrategia HNSW, entao o pacote ",
+        "mantem o algoritmo como auto porque algoritmos externos nao sao aplicados nessa rota."
       )
     )
 
@@ -53,10 +53,10 @@ sby_resolve_knn_algorithm <- function(sby_knn_algorithm, sby_predictor_column_co
       # Informa ao usuario a selecao automatica e a justificativa da decisao
       sby_adanear_inform(
         sby_message = paste0(
-          "KNN automático: sby_knn_algorithm = \"brute\" com sby_knn_engine = \"FNN\". ",
-          "Justificativa: os dados têm ", sby_predictor_column_count,
+          "KNN automatico: sby_knn_algorithm = \"brute\" com sby_knn_engine = \"FNN\". ",
+          "Justificativa: os dados tem ", sby_predictor_column_count,
           " colunas preditoras, acima do limite de 15; nessa dimensionalidade, ",
-          "a busca bruta tende a ser mais estável que estruturas de árvore."
+          "a busca bruta tende a ser mais estavel que estruturas de arvore."
         )
       )
 
@@ -66,9 +66,9 @@ sby_resolve_knn_algorithm <- function(sby_knn_algorithm, sby_predictor_column_co
     # Informa ao usuario a selecao automatica e a justificativa da decisao
     sby_adanear_inform(
       sby_message = paste0(
-        "KNN automático: sby_knn_algorithm = \"kd_tree\" com sby_knn_engine = \"FNN\". ",
-        "Justificativa: os dados têm ", sby_predictor_column_count,
-        " colunas preditoras, até o limite de 15; nessa dimensionalidade, ",
+        "KNN automatico: sby_knn_algorithm = \"kd_tree\" com sby_knn_engine = \"FNN\". ",
+        "Justificativa: os dados tem ", sby_predictor_column_count,
+        " colunas preditoras, ate o limite de 15; nessa dimensionalidade, ",
         "kd_tree costuma acelerar consultas exatas de vizinhos."
       )
     )

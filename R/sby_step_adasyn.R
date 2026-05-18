@@ -14,8 +14,6 @@
 #' `sby_knn_engine` define a implementação computacional e
 #' `sby_knn_distance_metric` define a noção de proximidade.
 #'
-#' ## Preciso informar `sby_knn_engine`?
-#'
 #' Em geral, não: para o uso cotidiano, mantenha `sby_knn_engine = "auto"` e
 #' `sby_knn_algorithm = "auto"`. Nesse modo, o pacote usa `FNN` com paralelismo exato por blocos quando `sby_knn_workers > 1L`; o algoritmo também
 #' é escolhido automaticamente pela dimensionalidade dos preditores. Informe o
@@ -65,8 +63,6 @@
 #' | `"cosine"` | Distância angular; compara a orientação dos vetores e reduz a influência da norma após normalização L2. | `RcppHNSW`; não é aceita por `FNN`. | Use quando o padrão relativo entre variáveis importa mais que o tamanho absoluto, como composições, assinaturas de perfil e vetores de alta dimensionalidade já materializados como matriz densa. |
 #' | `"ip"` | Produto interno convertido em distância; após normalização L2, fica próximo de uma comparação por similaridade angular. | Somente `RcppHNSW` neste pacote. | Use quando o modelo conceitual é similaridade por produto interno ou quando você precisa alinhar a busca a embeddings/vetores normalizados; requer busca aproximada. |
 #'
-#' ## Parâmetros exclusivos da rota HNSW
-#'
 #' Os argumentos `sby_knn_hnsw_m` e `sby_knn_hnsw_ef` só afetam a rota
 #' `sby_knn_engine = "RcppHNSW"`; eles não configuram o `"Hnsw"` de
 #' representa a conectividade máxima do grafo: valores maiores criam mais arestas,
@@ -84,7 +80,7 @@
 #'
 #' - Comece com `sby_knn_engine = "auto"`, `sby_knn_algorithm = "auto"` e
 #'   `sby_knn_distance_metric = "euclidean"`.
-#' - Para auditoria, bases pequenas ou necessidade de vizinhos exatos, prefira
+#' - Para auditoria, bases pequenas ou necessidade de vizinhos exatos, prefira `sby_knn_engine = "FNN"` com `sby_knn_algorithm = "kd_tree"` ou `"brute"`.
 #' - Para bases grandes, embeddings, `"ip"` ou alta dimensionalidade, use
 #'   `sby_knn_engine = "RcppHNSW"` e ajuste `sby_knn_hnsw_m`/`sby_knn_hnsw_ef`.
 #' - Em ADASYN, vizinhos aproximados podem mudar quais regiões recebem amostras
