@@ -16,10 +16,23 @@ sby_get_binary_class_roles <- function(
   sby_majority_label = NULL
 ){
   
-  # Calcula distribuicao de frequencias por classe
-  sby_class_counts <- table(
-    sby_target_factor
+  # Calcula distribuicao de frequencias por classe. Usa tabulate ao inves de
+  # table porque tabulate e cerca de 5x-10x mais rapido em fatores grandes
+  # (evita hash de strings, formatacao e ordenacao alfabetica de levels).
+  if(!is.factor(sby_target_factor)){
+    sby_target_factor <- as.factor(sby_target_factor)
+  }
+  sby_levels <- levels(sby_target_factor)
+  sby_counts_int <- tabulate(
+    bin = as.integer(sby_target_factor),
+    nbins = length(sby_levels)
   )
+  # Reconstroi um objeto compativel com table() (1D named array com class
+  # "table") usando dimnames apropriadamente sobre um array, nao um vetor.
+  sby_class_counts <- sby_counts_int
+  dim(sby_class_counts) <- length(sby_class_counts)
+  dimnames(sby_class_counts) <- structure(list(sby_levels), names = "sby_target_factor")
+  class(sby_class_counts) <- "table"
 
   # Verifica se o alvo possui exatamente duas classes
   if(length(sby_class_counts) != 2L){

@@ -1,8 +1,13 @@
 #' Remover o proprio ponto de uma matriz de vizinhos de forma robusta
 #'
 #' @details
-#' A funcao implementa uma unidade interna do fluxo de balanceamento com contrato de entrada explicito e retorno controlado
-#' A documentacao descreve a intencao operacional para apoiar manutencao, auditoria e revisao tecnica do pacote
+#' A entrada e uma matriz de indices retornada por uma consulta KNN que pode
+#' incluir a propria linha (quando query = data). A funcao retorna uma matriz
+#' com `sby_desired_k` colunas em que a auto-referencia foi removida. A
+#' implementacao e vetorizada: percorre apenas as linhas em que o self
+#' efetivamente aparece, evitando o custo de um loop em R por linha. Para
+#' bases com poucos empates de self isso reduz drasticamente o overhead em
+#' comparacao a implementacao linha-a-linha anterior.
 #'
 #' @param sby_neighbor_index Matriz de indices de vizinhos candidatos
 #' @param sby_self_index Vetor com indices das proprias linhas
@@ -11,40 +16,57 @@
 #' @return Matriz de indices de vizinhos sem o proprio ponto
 #' @noRd
 sby_drop_self_neighbor_index <- function(sby_neighbor_index, sby_self_index, sby_desired_k){
-  # Inicializa matriz de saida com dimensoes esperadas
-  sby_out <- matrix(
-    data = NA_integer_,
-    nrow = nrow(sby_neighbor_index),
-    ncol = sby_desired_k
-  )
+  sby_n <- nrow(sby_neighbor_index)
+  sby_k_plus <- ncol(sby_neighbor_index)
+  sby_desired_k <- as.integer(sby_desired_k)
+  sby_self_index <- as.integer(sby_self_index)
 
-  # Processa cada linha de vizinhos removendo o proprio ponto
-  for(i in seq_len(nrow(sby_neighbor_index))){
-    # Verifica interrupcao periodicamente durante processamento das linhas
-    if(i %% 1024L == 1L){
+  if(sby_desired_k < 1L){
+    return(matrix(integer(0), nrow = sby_n, ncol = 0L))
+  }
 
-      # Executa ponto cooperativo de interrupcao
-      sby_adanear_check_user_interrupt()
-    }
+  # Caso degenerado: nao ha colunas suficientes para garantir k vizinhos
+  # mesmo se nao houvesse self - retorna NA matriz para que o caller falhe
+  # de forma controlada.
+  if(sby_k_plus < sby_desired_k){
+    sby_adanear_abort(
+      sby_message = "Nao foi possivel remover o proprio ponto mantendo vizinhos suficientes"
+    )
+  }
 
-    # Filtra candidatos validos diferentes do indice da propria linha
+  # Caminho rapido vetorizado: assume que a coluna 1 do KNN, quando query=data,
+  # contem o proprio ponto na maioria das linhas (caso tipico de FNN exato).
+  # Estrategia em duas fases:
+  #   1) Caso geral: dropa a ultima coluna -> baseline com k colunas.
+  #   2) Repara apenas as linhas em que o self ainda esta presente nas k
+  #      primeiras colunas.
+  sby_out <- sby_neighbor_index[, seq_len(sby_desired_k), drop = FALSE]
+
+  # Identifica linhas que ainda contem self dentro do bloco baseline.
+  sby_baseline_self <- sby_out == sby_self_index
+  sby_baseline_self[is.na(sby_baseline_self)] <- FALSE
+  sby_rows_to_fix <- which(.rowSums(sby_baseline_self, m = sby_n, n = sby_desired_k) > 0L)
+
+  if(length(sby_rows_to_fix) == 0L){
+    # Mas tambem precisamos confirmar que o self nao esta na ultima coluna
+    # (descartada): se estiver, baseline ja esta correto. Se nao estava em
+    # nenhuma das k+1 colunas, baseline ainda esta correto.
+    return(sby_out)
+  }
+
+  # Para as linhas que precisam de conserto, reconstroi vizinhos validos por
+  # linha. Loop limitado as linhas problematicas, nao a base inteira.
+  for(i in sby_rows_to_fix){
     sby_candidates <- sby_neighbor_index[i, ]
     sby_candidates <- sby_candidates[!is.na(sby_candidates) & sby_candidates != sby_self_index[[i]]]
-
-    # Verifica se ha candidatos suficientes apos a remocao do proprio ponto
     if(length(sby_candidates) < sby_desired_k){
-
-      # Aborta quando nao e possivel manter a quantidade desejada de vizinhos
       sby_adanear_abort(
         sby_message = "Nao foi possivel remover o proprio ponto mantendo vizinhos suficientes"
       )
     }
-
-    # Preenche a linha de saida com os primeiros vizinhos validos
     sby_out[i, ] <- sby_candidates[seq_len(sby_desired_k)]
   }
 
-  # Retorna matriz de vizinhos sem autorreferencias
   return(sby_out)
 }
 ####

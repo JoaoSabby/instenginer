@@ -235,22 +235,32 @@ sby_generate_adasyn_samples <- function(
   # Preserva nomes de colunas na matriz sintetica
   colnames(sby_synthetic_matrix) <- colnames(sby_x_scaled)
 
-  # Retorna matriz expandida e alvo expandido com niveis preservados
+  # Retorna matriz expandida e alvo expandido com niveis preservados.
+  # Evita o ciclo factor -> character -> factor (que aloca vetores de strings
+  # do tamanho do conjunto inteiro): trabalhamos diretamente em codigos inteiros
+  # e reconstruimos o fator no final.
+  sby_minority_level_code <- match(
+    sby_class_roles$sby_minority_label,
+    levels(sby_target_factor)
+  )
+  sby_y_codes <- c(
+    unclass(sby_target_factor),
+    rep.int(sby_minority_level_code, sby_synthetic_count)
+  )
+  attributes(sby_y_codes) <- NULL
+  storage.mode(sby_y_codes) <- "integer"
+  sby_y_factor <- structure(
+    sby_y_codes,
+    levels = levels(sby_target_factor),
+    class = "factor"
+  )
+
   return(list(
     x = rbind(
       sby_x_scaled,
       sby_synthetic_matrix
     ),
-    y = factor(
-      x = c(
-        as.character(sby_target_factor),
-        rep.int(
-          x = sby_class_roles$sby_minority_label,
-          times = sby_synthetic_count
-        )
-      ),
-      levels = levels(sby_target_factor)
-    )
+    y = sby_y_factor
   ))
 }
 ####
